@@ -11,43 +11,61 @@ class ViewController: UIViewController {
 
     @IBOutlet weak var mainTableView: UITableView!
     
-    let maxNumber = 3
+    let maxNumber = 7
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        
+        mainTableView.register(CustomTableViewCell.nib(), forCellReuseIdentifier: CustomTableViewCell.identifier)
     }
 }
 
 extension ViewController: UITableViewDataSource, UITableViewDelegate {
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        
         return (2*maxNumber) + 1
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = mainTableView.dequeueReusableCell(withIdentifier: "mainTableViewCell")!
         
-        let numberArray = getNumberArray(index: indexPath.row
+        let cell = mainTableView.dequeueReusableCell(withIdentifier: CustomTableViewCell.identifier, for: indexPath) as! CustomTableViewCell
+        let modelArray = getNumberArray(index: indexPath.row
                                          , maxNumber: self.maxNumber)
-        
-        cell.textLabel?.text = numberArray.description
+        cell.configure(with: modelArray)
         
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        100
     }
 }
 
 extension ViewController {
     // Functions
-    private func getNumberArray(index: Int, maxNumber: Int) -> [Int]{
-        var resultArray = [Int]()
+    private func getNumberArray(index: Int, maxNumber: Int) -> [CollectionModel]{
+        
+        var models = [CollectionModel]()
         if (index <= maxNumber) {
-            resultArray = Array(0...(maxNumber-index))
+             models = getModelArray(upperLimit: maxNumber - index)
         }else {
             let mirroredIndex = maxNumber - (index - maxNumber)
             
-            resultArray = Array(0...(maxNumber - mirroredIndex))
+             models = getModelArray(upperLimit: maxNumber - mirroredIndex)
         }
-        return resultArray
+        return models
+    }
+    
+    // creates model array and returns it 
+    func getModelArray(upperLimit: Int) -> [CollectionModel] {
+        
+        var models = [CollectionModel]()
+        for i in 0...upperLimit {
+            let model = CollectionModel(text: String(i))
+            models.append(model)
+        }
+        return models
     }
 }
 
